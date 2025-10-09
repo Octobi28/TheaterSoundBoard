@@ -161,6 +161,7 @@ public class SoundBoardUI extends javax.swing.JFrame {
              } catch (IOException ex) {
                  System.getLogger(SoundBoardUI.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
              }
+             updateJsonName();
          }
     }//GEN-LAST:event_folderChooseMouseClicked
 
@@ -186,6 +187,7 @@ public class SoundBoardUI extends javax.swing.JFrame {
     }
     
     private void makeSoundArray(String path){
+        soundArray = new ArrayList<>();
         for (File f : new File(path).listFiles()){
             if (f.getName().contains(".mp3") || f.getName().contains(".wav")){
                 soundArray.add(f);
@@ -194,9 +196,7 @@ public class SoundBoardUI extends javax.swing.JFrame {
     }
     
     private void makeJson(String filename) throws IOException{
-        String[] pathWords = filepath.split("/");
-        jsonName = pathWords[pathWords.length-1];
-        jsonName +=(new File(filepath).listFiles().length);
+        updateJsonName();
         
         mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -238,24 +238,32 @@ public class SoundBoardUI extends javax.swing.JFrame {
     }
     
     private void readJson() throws IOException{
+        updateJsonName();
         try {
             String path = "jsonConfigs/"+jsonName+".json";
             mapper = new ObjectMapper();
             System.out.println("Reading json: " + path);
             JsonNode tree = mapper.readTree(new File(path));
             for (SoundEffectButton button: buttons){
-                System.out.println(tree.get(button.getPath()).get(0).get(1));
-                button.setVolume(tree.get(button.getPath()).get(0).get(1).asInt());
-                button.setStartPos(tree.get(button.getPath()).get(0).get(0).asInt());
-                button.repaint();
+                button.setVolume(tree.get(button.getPath()).get(1).asInt());
+                button.setStartPos(tree.get(button.getPath()).get(0).asInt());
             }
-        } catch (IOException ex) {
+            jPanel1.validate();
+            jPanel1.repaint();
+        } catch (Exception ex) {
             System.out.println("no appropriate json found, skipping");
         }
         
     }
     
+    private void updateJsonName(){
+        String[] pathWords = filepath.split("/");
+        jsonName = pathWords[pathWords.length-1];
+        jsonName +=(new File(filepath).listFiles().length);
+    }
+    
     private void makeButtons(){
+        jPanel1.removeAll();
         buttons = new SoundEffectButton[soundArray.size()];
         for (int i = 0; i < buttons.length; i++){
             if (soundArray.get(i).getName().contains(".mp3") || soundArray.get(i).getName().contains(".wav")){

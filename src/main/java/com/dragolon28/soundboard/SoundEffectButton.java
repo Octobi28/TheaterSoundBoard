@@ -4,8 +4,6 @@
  */
 package com.dragolon28.soundboard;
 import java.io.*;
-import java.util.Random;
-import java.awt.*;
 /**
  *
  * @author zack
@@ -16,6 +14,7 @@ public class SoundEffectButton extends javax.swing.JPanel {
 
     /**
      * Creates new form SoundEffectButton
+     * @param file
      */
     public SoundEffectButton(File file) {
         initComponents();
