@@ -245,8 +245,8 @@ public class SoundBoardUI extends javax.swing.JFrame {
             System.out.println("Reading json: " + path);
             JsonNode tree = mapper.readTree(new File(path));
             for (SoundEffectButton button: buttons){
-                button.setVolume(tree.get(button.getPath()).get(1).asInt());
-                button.setStartPos(tree.get(button.getPath()).get(0).asInt());
+                button.setVolume(tree.get(button.getPath()).get(0).get(1).asInt());
+                button.setStartPos(tree.get(button.getPath()).get(0).get(0).asInt());
             }
             jPanel1.validate();
             jPanel1.repaint();
