@@ -340,16 +340,18 @@ public class SoundBoardUI extends javax.swing.JFrame {
         } catch(Exception e){
             logToApp("Failed to grab file");
             try{
-                logToApp("Tried to make file");
+                logToApp("Trying to make file");
             PrintStream jsonMaker = new PrintStream(pathBase + "jsonConfigs/" + filename + ".json");
             jsonMaker.print("");
             jsonMaker.close();
+            logToApp("Made File");
             } catch(Exception ex){
                 logToApp("Failed, making folder");
                 new File(pathBase+"jsonConfigs").mkdir();
                 PrintStream jsonMaker = new PrintStream(pathBase+"jsonConfigs/" + filename + ".json");
                 jsonMaker.print("");
                 jsonMaker.close();
+                logToApp("Made Folder & File");
             }
             testJson = new File(pathBase+"jsonConfigs/" + filename + ".json");
         }
