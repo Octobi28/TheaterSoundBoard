@@ -28,6 +28,7 @@ public class SoundBoardUI extends javax.swing.JFrame {
     private static String jsonName;
     private static boolean muted;
     public static int volume;
+    private static String pathBase;
     /**
      * Creates new form SounBoardUI
      * @throws java.io.IOException
@@ -35,8 +36,8 @@ public class SoundBoardUI extends javax.swing.JFrame {
     public SoundBoardUI() throws IOException{
         initComponents();
         Platform.startup(() -> {});
-        String userHomeDir = System.getProperty("user.home");
-        configFile = new File(userHomeDir + java.io.File.separator + "SoundBoardConfig.txt");
+        pathBase = System.getProperty("user.home") + java.io.File.separator;
+        configFile = new File(pathBase + "SoundBoardConfig.txt");
         if (!configFile.exists()){
             configFile.createNewFile();
         }
@@ -333,24 +334,24 @@ public class SoundBoardUI extends javax.swing.JFrame {
         
         try {
             logToApp("Saving JSON");
-            testJson = new File("jsonConfigs/" + filename + ".json");
+            testJson = new File(pathBase + "jsonConfigs/" + filename + ".json");
             if (!testJson.exists())
                 throw new Exception();
         } catch(Exception e){
             logToApp("Failed to grab file");
             try{
                 logToApp("Tried to make file");
-            PrintStream jsonMaker = new PrintStream("jsonConfigs/" + filename + ".json");
+            PrintStream jsonMaker = new PrintStream(pathBase + "jsonConfigs/" + filename + ".json");
             jsonMaker.print("");
             jsonMaker.close();
             } catch(Exception ex){
                 logToApp("Failed, making folder");
-                new File("jsonConfigs").mkdir();
-                PrintStream jsonMaker = new PrintStream("jsonConfigs/" + filename + ".json");
+                new File(pathBase+"jsonConfigs").mkdir();
+                PrintStream jsonMaker = new PrintStream(pathBase+"jsonConfigs/" + filename + ".json");
                 jsonMaker.print("");
                 jsonMaker.close();
             }
-            testJson = new File("jsonConfigs/" + filename + ".json");
+            testJson = new File(pathBase+"jsonConfigs/" + filename + ".json");
         }
         
         JsonGenerator g = mapper.createGenerator(testJson, JsonEncoding.UTF8);
@@ -368,7 +369,7 @@ public class SoundBoardUI extends javax.swing.JFrame {
     private void readJson() throws IOException{
         updateJsonName();
         try {
-            String path = "jsonConfigs/"+jsonName+".json";
+            String path = pathBase+"jsonConfigs/"+jsonName+".json";
             mapper = new ObjectMapper();
             logToApp("Reading JSON: " + jsonName);
             JsonNode tree = mapper.readTree(new File(path));
@@ -400,8 +401,11 @@ public class SoundBoardUI extends javax.swing.JFrame {
                 } catch (IOException ex) {
                     System.getLogger(SoundBoardUI.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 }
-                jPanel1.add(buttons[i]);
             }
+        }
+        Arrays.sort(buttons);
+        for(SoundEffectButton b : buttons){
+            jPanel1.add(b);
         }
         jPanel1.validate();
         jPanel1.repaint();

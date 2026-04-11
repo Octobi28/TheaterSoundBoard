@@ -12,7 +12,7 @@ import javax.swing.Timer;
  *
  * @author zack
  */
-public class SoundEffectButton extends javax.swing.JPanel implements java.awt.event.ActionListener{
+public class SoundEffectButton extends javax.swing.JPanel implements java.awt.event.ActionListener, Comparable<SoundEffectButton>{
 
     private final File file;
     private MediaPlayer sound;
@@ -233,5 +233,10 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
     private javax.swing.JLabel volumeLabel;
     private javax.swing.JSlider volumeSlider;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public int compareTo(SoundEffectButton o) {
+        return -1*o.toString().compareTo(this.toString());
+    }
 
 }
