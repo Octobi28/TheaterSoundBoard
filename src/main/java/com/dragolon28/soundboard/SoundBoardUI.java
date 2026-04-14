@@ -6,6 +6,7 @@ package com.dragolon28.soundboard;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.formdev.flatlaf.FlatDarkLaf;
+import java.awt.Color;
 import java.io.*;
 import java.util.*;
 import javafx.application.Platform;
@@ -351,7 +352,7 @@ public class SoundBoardUI extends javax.swing.JFrame {
                 PrintStream jsonMaker = new PrintStream(pathBase+"jsonConfigs/" + filename + ".json");
                 jsonMaker.print("");
                 jsonMaker.close();
-                logToApp("Made Folder & File");
+                logToApp("Made folder & file");
             }
             testJson = new File(pathBase+"jsonConfigs/" + filename + ".json");
         }
@@ -438,6 +439,7 @@ public class SoundBoardUI extends javax.swing.JFrame {
         
         
         FlatDarkLaf.setup();
+        UIManager.put("ToggleButton.selectedBackground", new Color(132, 136, 138));
         java.awt.EventQueue.invokeLater(() -> {
             try {
 		System.out.println("yo here...");
