@@ -5,7 +5,6 @@
 package com.dragolon28.soundboard;
 import java.awt.event.ActionEvent;
 import java.io.*;
-import java.util.logging.Level;
 import javafx.scene.media.*;
 import javafx.util.Duration;
 import javax.swing.Timer;
@@ -21,6 +20,7 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
     private Timer timer;
     private SoundBoardUI container;
     private boolean loop;
+    private boolean paused;
 
     /**
      * Creates new form SoundEffectButton
@@ -39,6 +39,7 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
         volumeLabel.setText(volumeSlider.getValue()+"%");
         sound = new MediaPlayer(new Media(file.toURI().toString()));
         loop = false;
+        paused = false;
     }
 
     /**
@@ -59,6 +60,7 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
         volumeSlider = new javax.swing.JSlider();
         soundName = new javax.swing.JLabel();
         loopButton = new javax.swing.JToggleButton();
+        stopButton = new javax.swing.JButton();
 
         setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         setMaximumSize(new java.awt.Dimension(500, 211));
@@ -74,8 +76,9 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 14;
         gridBagConstraints.ipady = 10;
@@ -93,16 +96,24 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
         startPosLabel.setMinimumSize(new java.awt.Dimension(64, 20));
         startPosLabel.setPreferredSize(new java.awt.Dimension(64, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipadx = 4;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
         add(startPosLabel, gridBagConstraints);
 
         playPos.setValue(100);
+        playPos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                playPosMouseClicked(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 4;
         gridBagConstraints.ipady = 15;
@@ -113,7 +124,9 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
         volumeLabel.setText("volume");
         volumeLabel.setPreferredSize(new java.awt.Dimension(42, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipadx = 4;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
@@ -132,6 +145,7 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
@@ -146,6 +160,7 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
@@ -156,7 +171,7 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
         soundName.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         soundName.setPreferredSize(null);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.ipadx = 4;
@@ -178,6 +193,18 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
         gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 4);
         add(loopButton, gridBagConstraints);
+
+        stopButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/stopIcon.png"))); // NOI18N
+        stopButton.setPreferredSize(new java.awt.Dimension(35, 35));
+        stopButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        add(stopButton, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     @Override
@@ -197,13 +224,14 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
     public void muted(boolean mute){
         sound.setMute(mute);
     }
-    private void playSound() {
-        playButton.setText("Stop");
+    private void playSound(Duration start) {
+        playButton.setText("Pause");
         container.logToApp("Playing sound: " + file.getName());
         sound.setVolume((((double)volumeSlider.getValue())/100)*(((double)container.volume)/100));
         System.out.println((((double)volumeSlider.getValue())/100)*(((double)container.volume)/100));
-        sound.seek(Duration.seconds(((double)startPosSlider.getValue())*0.25));
-        
+        if (start.toSeconds() != -1){
+            sound.seek(start);
+        }
         sound.play();
         time = sound.getTotalDuration();
         updatePosBar();
@@ -223,12 +251,13 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
 
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
         if(timer.isRunning()){
-            container.logToApp("Stopping Sound");
-            sound.stop();
+            container.logToApp("Pausing Sound");
+            sound.pause();
             timer.stop();
-            playPos.setValue(100);
+            paused = true;
             playButton.setText("Play");
-        } else{playSound();}
+        } else if (paused) {playSound(Duration.seconds(-1)); paused = false;}
+        else{playSound(Duration.seconds(((double)startPosSlider.getValue())*0.25));}
     }//GEN-LAST:event_playButtonActionPerformed
 
     private void loopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loopButtonActionPerformed
@@ -243,6 +272,19 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
             container.logToApp("Stopped looping sound: " + toString());
         }
     }//GEN-LAST:event_loopButtonActionPerformed
+
+    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        container.logToApp("Stopping Sound");
+        sound.stop();
+        timer.stop();
+        playPos.setValue(100);
+        paused = false;
+        playButton.setText("Play");
+    }//GEN-LAST:event_stopButtonActionPerformed
+
+    private void playPosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playPosMouseClicked
+        playSound(Duration.seconds(((double)evt.getX() / playPos.getWidth())*sound.getCycleDuration().toSeconds()));
+    }//GEN-LAST:event_playPosMouseClicked
 
     public int[] getValues(){
         return new int[]{startPosSlider.getValue(), volumeSlider.getValue()};
@@ -272,6 +314,7 @@ public class SoundEffectButton extends javax.swing.JPanel implements java.awt.ev
     private javax.swing.JLabel soundName;
     private javax.swing.JLabel startPosLabel;
     private javax.swing.JSlider startPosSlider;
+    private javax.swing.JButton stopButton;
     private javax.swing.JLabel volumeLabel;
     private javax.swing.JSlider volumeSlider;
     // End of variables declaration//GEN-END:variables
